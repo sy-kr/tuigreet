@@ -718,9 +718,10 @@ async fn test_doom_animation_renders_and_form_stays_legible()
     buffer = render_ui(Arc::clone(&greeter), 80, 24).await?;
   }
 
-  // Some cell on the bottom row should be a fire glyph — the bottom is
-  // re-stamped to STEPS=12 every frame.
-  let bottom = 23u16;
+  // Some cell on the lowest visible row should be a fire glyph. The fire's
+  // base row (23) is re-stamped to STEPS=12 every frame, but it sits under
+  // the status bar, which is cleared; check the row just above it.
+  let bottom = 22u16;
   let fire_glyphs = ['░', '▒', '▓', '█'];
   let bottom_has_fire = (0..80).any(|x| {
     buffer[(x, bottom)]
@@ -790,6 +791,47 @@ async fn test_matrix_animation_renders_and_form_stays_legible()
   assert!(
     !katakana_in_form,
     "matrix glyphs must not bleed through the login form"
+  );
+  Ok(())
+}
+
+#[tokio::test]
+async fn test_animation_is_cleared_under_status_and_time_rows()
+-> Result<(), Box<dyn Error>> {
+  use crate::ui::bg_animation::{self as animation, AnimationSpec, radio};
+
+  let greeter = test_greeter();
+  let padding = {
+    let mut g = greeter.write().await;
+    g.mode = Mode::Username;
+    g.time = true;
+    // A glyph that no label can contain, so any `~` is animation bleed.
+    g.animation = Some(animation::build(&AnimationSpec::Radio(
+      radio::Options {
+        noise: 0.0,
+        glyphs: vec!['~'],
+        ..radio::Options::default()
+      },
+    )));
+    g.window_padding()
+  };
+
+  let buffer = render_ui(Arc::clone(&greeter), 80, 24).await?;
+
+  let painted_anywhere =
+    (0..24).any(|y| get_line(&buffer, y, 80).contains('~'));
+  assert!(painted_anywhere, "radio should paint on the first frame");
+
+  let time_row = get_line(&buffer, padding, 80);
+  assert!(!time_row.contains('~'), "time row not cleared: {time_row:?}");
+
+  let status_row = (0..24)
+    .map(|y| get_line(&buffer, y, 80))
+    .find(|line| line.contains("ESC"))
+    .expect("status bar row");
+  assert!(
+    !status_row.contains('~'),
+    "status row not cleared: {status_row:?}"
   );
   Ok(())
 }

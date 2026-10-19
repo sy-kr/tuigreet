@@ -54,8 +54,9 @@ available through `F12`.
 tuigreet can paint an animated backdrop behind the login form. Animations are
 off by default and selected by name with `--background <name>`, or by setting
 `kind` in the `[background]` section of your config file. The login form is
-drawn on top of the animation and clears the cells it occupies, so the prompt
-remains legible regardless of what the backdrop is doing.
+drawn on top of the animation and clears the cells it occupies, as are the
+time and status rows, so the text remains legible regardless of what the
+backdrop is doing.
 
 Frame rate is configurable through `--background-fps`, and defaults to 30 FPS
 while an animation is active (the UI otherwise ticks at the usual 2 FPS).

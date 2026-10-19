@@ -30,7 +30,7 @@ use tui::{
   layout::{Constraint, Direction, Layout},
   style::Modifier,
   text::{Line, Span},
-  widgets::Paragraph,
+  widgets::{Clear, Paragraph},
 };
 use tuigreet_config::{BatteryPosition, WidgetPosition};
 use tuigreet_types::Mode;
@@ -150,8 +150,10 @@ where
 
     let chunks = Layout::default().constraints(constraints).split(size);
 
-    // Render top info row: time centered, battery overlaid
+    // Render top info row: time centered, battery overlaid. Each strip is
+    // cleared first so a background animation cannot crowd its text.
     if let Some(slot) = info_top_slot {
+      f.render_widget(Clear, chunks[slot]);
       let top_chunks = Layout::default()
         .direction(Direction::Horizontal)
         .constraints(
@@ -231,6 +233,7 @@ where
 
     // Render time at bottom
     if let Some(slot) = time_bottom_slot {
+      f.render_widget(Clear, chunks[slot]);
       let time_text = get_time(&greeter);
 
       let time_chunks = Layout::default()
@@ -255,6 +258,7 @@ where
 
     // Render status bar if not hidden
     if let Some(slot) = status_slot {
+      f.render_widget(Clear, chunks[slot]);
       let status_block_size_right = layout_text_width(&fl!("status_caps"));
 
       let status_chunks = Layout::default()
