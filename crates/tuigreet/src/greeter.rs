@@ -892,7 +892,7 @@ impl Greeter {
     opts.optopt(
       "",
       "background",
-      "background animation to render behind the login UI ('doom' or 'none')",
+      "background animation to render behind the login UI ('doom', 'matrix', 'radio' or 'none')",
       "NAME",
     );
     opts.optopt(
@@ -1252,7 +1252,7 @@ impl Greeter {
     &mut self,
     cfg: &tuigreet_config::BackgroundConfig,
   ) {
-    use crate::ui::bg_animation::{Kind, doom, matrix};
+    use crate::ui::bg_animation::{Kind, doom, matrix, radio};
 
     let Some(kind) = cfg.kind.as_deref().and_then(Kind::from_name) else {
       if let Some(name) = cfg.kind.as_deref()
@@ -1300,6 +1300,8 @@ impl Greeter {
           mutate_chance: cfg.matrix.mutate_chance.unwrap_or(d.mutate_chance),
         })
       },
+      // Tuned in-code for now; see `radio::Options::default()`.
+      Kind::Radio => AnimationSpec::Radio(radio::Options::default()),
     };
     self.animation = Some(bg_animation::build(&spec));
     self.animation_fps = Some(cfg.fps.unwrap_or(ANIMATION_DEFAULT_FPS));

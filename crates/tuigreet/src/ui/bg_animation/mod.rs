@@ -2,6 +2,7 @@
 
 pub mod doom;
 pub mod matrix;
+pub mod radio;
 
 use std::str::FromStr;
 
@@ -24,6 +25,7 @@ pub trait Animation: Send + Sync {
 pub enum Kind {
   Doom,
   Matrix,
+  Radio,
 }
 
 /// Catalog entry for a registered animation kind.
@@ -44,6 +46,11 @@ pub const KINDS: &[KindInfo] = &[
     kind:  Kind::Matrix,
     name:  "matrix",
     label: "Matrix",
+  },
+  KindInfo {
+    kind:  Kind::Radio,
+    name:  "radio",
+    label: "Radio Waves",
   },
 ];
 
@@ -72,6 +79,7 @@ impl Kind {
 pub enum AnimationSpec {
   Doom(doom::Options),
   Matrix(matrix::Options),
+  Radio(radio::Options),
 }
 
 /// Construct an animation matching `spec`'s variant.
@@ -79,6 +87,7 @@ pub fn build(spec: &AnimationSpec) -> Box<dyn Animation> {
   match spec {
     AnimationSpec::Doom(opts) => Box::new(doom::Doom::new(opts.clone())),
     AnimationSpec::Matrix(opts) => Box::new(matrix::Matrix::new(opts.clone())),
+    AnimationSpec::Radio(opts) => Box::new(radio::Radio::new(opts.clone())),
   }
 }
 
@@ -89,6 +98,7 @@ impl Kind {
     match self {
       Self::Doom => AnimationSpec::Doom(doom::Options::default()),
       Self::Matrix => AnimationSpec::Matrix(matrix::Options::default()),
+      Self::Radio => AnimationSpec::Radio(radio::Options::default()),
     }
   }
 }
@@ -148,5 +158,6 @@ mod tests {
     assert_eq!(Kind::from_name(""), None);
     assert_eq!(Kind::from_name("matrix"), Some(Kind::Matrix));
     assert_eq!(Kind::from_name("CMATRIX"), Some(Kind::Matrix));
+    assert_eq!(Kind::from_name("radio"), Some(Kind::Radio));
   }
 }

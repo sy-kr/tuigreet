@@ -74,6 +74,9 @@ The following animation is available out of the box:
   `--matrix-length MIN,MAX` (rows, default `6,18`) and fall speed with
   `--matrix-speed MIN,MAX` (rows-per-frame, default `0.30,1.10`); the three
   color bands are set together with `--matrix-colors HEAD,BRIGHT,DIM`.
+- `radio` - Concentric blue rings rippling outward from the centre of the
+  screen. Not yet configurable; its wave speed, wavelength, ring thickness,
+  fade, noise, glyphs and palette are constants in the animation's source.
 
 You can also switch animations on the fly without restarting the greeter by
 hitting `F4`. This opens a small menu listing every available animation plus a

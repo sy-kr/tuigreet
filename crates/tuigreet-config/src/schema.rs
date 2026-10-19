@@ -541,7 +541,7 @@ pub struct ThemeConfig {
 #[derive(Debug, Clone, Deserialize, Serialize, Default, PartialEq)]
 pub struct BackgroundConfig {
   /// Which animation to run. `None` or `"none"` disables animations.
-  /// Currently supported: `"doom"`, `"matrix"`.
+  /// Currently supported: `"doom"`, `"matrix"`, `"radio"`.
   #[serde(default)]
   pub kind: Option<String>,
 
